@@ -19,8 +19,16 @@ services:
     depends_on:
       - postgres
     environment:
-      # Backend'in veritabanına bağlanırken kullanacağı adres (localhost yerine postgres servisi)
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/library_db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    environment:
+      - API_URL=http://backend:8000
 
 volumes:
   postgres_data:

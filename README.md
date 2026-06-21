@@ -4,9 +4,9 @@
 
 Bu proje, dijital ortamda bir kütüphane sisteminin yönetilmesini sağlayan backend tabanlı bir uygulamadır.
 
-Sistem; kullanıcı kayıt işlemleri, güvenli kullanıcı giriş sistemi, rol tabanlı yetkilendirme, kitap ekleme/güncelleme/silme işlemleri, kitap ödünç alma ve iade süreçleri, rezervasyon oluşturma ve detaylı raporlama işlemlerini desteklemektedir.
+Sistem; kullanıcı kayıt işlemleri, kullanıcı giriş sistemi, kitap ekleme/güncelleme/silme işlemleri, kitap ödünç alma ve iade süreçleri, rezervasyon oluşturma ve raporlama işlemlerini desteklemektedir.
 
-Proje kapsamında gerçek bir veri seti kullanılarak başlangıç kitap envanteri oluşturulmuş ve veriler veritabanına aktarılmıştır. Tüm sistem Docker mimarisi üzerine inşa edilerek izole bir çalışma ortamı sağlanmıştır.
+Proje kapsamında gerçek bir veri seti kullanılarak başlangıç kitap envanteri oluşturulmuş ve veriler veritabanına aktarılmıştır.
 
 Bu proje, IYD 328 İş Yeri Deneyimi dersi kapsamında geliştirilmiştir.
 
@@ -20,7 +20,7 @@ Projede kullanılan teknolojiler:
 * FastAPI
 * PostgreSQL
 * SQLAlchemy ORM
-* Docker & Docker Compose
+* Docker
 * Pandas
 * JWT (JSON Web Token)
 * Swagger API Dokümantasyonu
@@ -36,7 +36,7 @@ Veri setinde aşağıdaki bilgiler bulunmaktadır:
 * ISBN
 * Kitap Adı
 * Yazar
-* Yayıncı
+* Yayınevi
 * Yayın Yılı
 
 Veri seti temizlenmiş ve Python scripti kullanılarak PostgreSQL veritabanına aktarılmıştır.
@@ -52,19 +52,18 @@ Sistem aşağıdaki kullanıcı işlemlerini destekler:
 * Kullanıcı kayıt oluşturma
 * Kullanıcı giriş işlemi
 * Şifrelerin hashlenerek güvenli şekilde saklanması
-* JWT token oluşturulması ve yetkilendirme
-* Rol tabanlı erişim kontrolü (Yönetici, Kütüphaneci, Öğrenci)
+* JWT token oluşturulması
 
 ---
 
 ### Kitap Yönetimi
 
-Sistem üzerinde kitaplarla ilgili şu işlemler yapılabilir (Kitap ekleme, silme ve güncelleme işlemleri sadece yetkili kullanıcılar tarafından yapılabilir):
+Sistem üzerinde kitaplarla ilgili şu işlemler yapılabilir:
 
 * Yeni kitap ekleme
 * Kitap bilgilerini güncelleme
 * Kitap silme
-* Kitap arama (Başlık, yazar, yayınevi veya ISBN'e göre)
+* Kitap arama
 * Tüm kitapları listeleme
 
 ---
@@ -77,7 +76,6 @@ Sistem aşağıdaki işlemleri destekler:
 * Son teslim tarihi oluşturma
 * Kitabın uygunluk durumunu kontrol etme
 * Ödünç alınan kitabın stok bilgisini güncelleme
-* Kullanıcı işlem geçmişini görüntüleme
 
 ---
 
@@ -109,10 +107,8 @@ Sistem:
 Sistem aşağıdaki raporları üretmektedir:
 
 * En çok ödünç alınan kitaplar
-* Gecikmiş kitaplar (Teslim tarihi geçmiş olanlar)
-* Aktif kullanıcılar
-* Aylık ödünç alma istatistikleri
-* Mevcut durumda ödünç alınmış kitaplar
+* Gecikmiş kitaplar
+* Kullanıcının ödünç alma geçmişi
 
 ---
 
@@ -191,7 +187,6 @@ Alanlar:
 ```text
 POST /register
 POST /login
-GET /users
 ```
 
 ---
@@ -201,8 +196,8 @@ GET /users
 ```text
 POST /books
 GET /books
-PUT /books/{book_id}
-DELETE /books/{book_id}
+PUT /books/{id}
+DELETE /books/{id}
 GET /books/search
 ```
 
@@ -231,9 +226,6 @@ POST /reserve
 ```text
 GET /reports/most-borrowed
 GET /reports/overdue
-GET /reports/active-users
-GET /reports/monthly-stats
-GET /reports/currently-borrowed
 ```
 
 ---
@@ -246,27 +238,32 @@ Projeyi klonlayın:
 git clone <repository-url>
 ```
 
-**Docker ile Çalıştırma (Önerilen):**
-Sistemi tüm servisleriyle (Veritabanı + Backend API) izole bir ortamda çalıştırmak için aşağıdaki komutu kullanın:
-
-```bash
-docker-compose up --build -d
-```
-
-**Lokalde Çalıştırma (Alternatif):**
 Sanal ortam oluşturun:
+
 ```bash
 python -m venv venv
 ```
+
 Sanal ortamı aktif edin:
+
 ```bash
 venv\Scripts\activate
 ```
+
 Gerekli paketleri kurun:
+
 ```bash
 pip install -r requirements.txt
 ```
-Uygulamayı başlatın (Bu yöntem için bilgisayarınızda PostgreSQL kurulu ve ayarlı olmalıdır):
+
+Docker containerını çalıştırın:
+
+```bash
+docker compose up -d
+```
+
+Uygulamayı başlatın:
+
 ```bash
 uvicorn app.main:app --reload
 ```
@@ -275,12 +272,12 @@ uvicorn app.main:app --reload
 
 ## API Dokümantasyonu
 
-Projeyi çalıştırdıktan sonra Swagger arayüzü üzerinden endpointler test edilebilir.
+Swagger arayüzü üzerinden endpointler test edilebilir.
 
 Adres:
 
 ```text
-[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+http://127.0.0.1:8000/docs
 ```
 
 ---
@@ -288,7 +285,7 @@ Adres:
 ## Proje Klasör Yapısı
 
 ```text
-library-management/
+kutuphane_yonetim_sistemi/
 
 app/
  ├── api/
@@ -296,13 +293,13 @@ app/
  ├── database/
  ├── models/
  ├── schemas/
- ├── services/
+
+books_data/
 
 scripts/
- └── load_books.py
-
 tests/
 
+.gitignore
 Dockerfile
 docker-compose.yml
 README.md
@@ -316,6 +313,7 @@ requirements.txt
 İlerleyen süreçte sisteme şu özellikler eklenebilir:
 
 * Frontend arayüz geliştirilmesi
+* Rol bazlı yetkilendirme sistemi
 * Gelişmiş filtreleme seçenekleri
 * Sayfalama (pagination) desteği
 * Email bildirim sistemi
@@ -324,6 +322,6 @@ requirements.txt
 
 ---
 
-## Proje Sahibi Ravza Kuşulay
+## Proje Sahibi
 
 Bu proje, backend geliştirme, veritabanı yönetimi ve API tasarımı konularında pratik kazanmak amacıyla geliştirilmiştir.
