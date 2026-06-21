@@ -68,3 +68,17 @@ def most_borrowed(
     ).all()
 
     return result
+
+from datetime import datetime
+
+@router.get("/reports/overdue")
+def get_overdue_books(
+        db: Session = Depends(get_db)
+):
+    # Status'ü 'borrowed' olan ve due_date'i bugünden küçük olanlar
+    overdue_transactions = db.query(BorrowTransaction).filter(
+        BorrowTransaction.status == "borrowed",
+        BorrowTransaction.due_date < datetime.utcnow()
+    ).all()
+
+    return overdue_transactions

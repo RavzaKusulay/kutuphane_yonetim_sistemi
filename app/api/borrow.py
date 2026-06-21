@@ -81,3 +81,17 @@ def return_book(
     return {
         "message": "Book returned successfully"
     }
+
+@router.get("/history/{user_id}")
+def get_user_history(
+        user_id: int,
+        db: Session = Depends(get_db)
+):
+    history = db.query(BorrowTransaction).filter(
+        BorrowTransaction.user_id == user_id
+    ).all()
+    
+    if not history:
+        raise HTTPException(status_code=404, detail="No history found for this user")
+        
+    return history

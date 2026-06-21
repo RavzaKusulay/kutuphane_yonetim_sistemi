@@ -5,24 +5,27 @@ from app.database.database import get_db
 from app.models.book import Book
 from app.schemas.book import BookCreate, BookResponse
 from fastapi import HTTPException
+from app.auth.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
-def check_admin(role):
-
-    if role not in ["admin", "librarian"]:
+def check_admin(user: User):
+    if user.role not in ["admin", "librarian"]:
         raise HTTPException(
             status_code=403,
-            detail="Unauthorized"
+            detail="Unauthorized: Sadece admin veya kütüphaneci işlem yapabilir."
         )
 
 @router.post("/books", response_model=BookResponse)
 def create_book(
         book: BookCreate,
-        role: str = Header(None),
+        current_user: User = Depends(get_current_user), # Token'ı okuyup kullanıcıyı getirir
         db: Session = Depends(get_db)
 ):
-    check_admin(role)
+    
+    check_admin(current_user)
+    
     
     new_book = Book(
         isbn=book.isbn,

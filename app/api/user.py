@@ -76,3 +76,10 @@ def logout():
     return {
         "message": "User logged out successfully"
     }
+
+@router.get("/users")
+def get_all_users(
+        db: Session = Depends(get_db)
+):
+    users = db.query(User).all()
+    return users
