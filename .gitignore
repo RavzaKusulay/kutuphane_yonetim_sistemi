@@ -1,4 +1,5 @@
 venv/
+books_data/
 __pycache__/
 .env
 .idea/
